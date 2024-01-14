@@ -167,4 +167,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         return count;
     }
+
+    //delete all records
+    public void deleteAllRecords(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + ConstantsDb.TABLE_NAME);
+        db.execSQL("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='" + ConstantsDb.TABLE_NAME + "'");
+        db.close();
+
+    }
+
+    //delete by id
+    public void deleteRecordById(String id){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(ConstantsDb.TABLE_NAME, ConstantsDb.COLUMN_ID + " = ?", new String[]{id});
+        db.close();
+    }
+
 }

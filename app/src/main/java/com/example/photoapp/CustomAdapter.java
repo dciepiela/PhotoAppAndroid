@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,11 +25,16 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     //Animation translate_anim;
 
 
+    //db helper
+    MyDatabaseHelper myDB;
+
+
     //constructor
 
     public CustomAdapter(Context context, ArrayList<ModelRecord> recordsList) {
         this.context = context;
         this.recordsList = recordsList;
+        myDB = new MyDatabaseHelper(context);
     }
 
     @NonNull
@@ -57,7 +63,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         //set data
         holder.title_text.setText(title);
-        holder.description_text.setText(title);
+        holder.description_text.setText(description);
 
         if(image.equals("null")){
             //no image
@@ -70,7 +76,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         //handle item clicks (go to detail record activity)
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, RecordDetailActivity.class);
-            intent.putExtra("RECORD_ID", id); //??????
+            intent.putExtra("RECORD_ID", id);
             context.startActivity(intent);
         });
 
@@ -91,9 +97,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         });
     }
 
-    private void showMoreDialog(String position, String id, String title, String image,
-                                String description, String keyWords, String addedTime,
-                                String updatedTime, String address) {
+    private void showMoreDialog(String position, final String id, final String title,final String image,
+                                final String description, final String keyWords, final String addedTime,
+                                final String updatedTime, final String address) {
         //options to display in dialog
         String[] options = {"Edytuj", "Usuń"};
         //dialog
@@ -103,7 +109,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             //handle item clicks
             if(which==0){
                 //edit is clicked
-                Intent intent = new Intent(context,AddPhotoActivity.class);
+                Intent intent = new Intent(context, AddAndUpdatePhotoActivity.class);
                 intent.putExtra("ID", id);
                 intent.putExtra("TITLE", title);
                 intent.putExtra("IMAGE", image);
@@ -117,8 +123,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
             }else if(which==1){
                 //delete is clicked
+                myDB.deleteRecordById(id);
+                //refresh record by calling activities onResume method
+                ((MainActivity)context).onResume();
             }
         });
+        builder.create().show();
     }
 
     @Override

@@ -15,18 +15,22 @@
         android:layout_marginBottom="28dp"
         android:clickable="true"
         android:focusable="true"
+        app:backgroundTint="@color/light_sea_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_photo" />
+        app:srcCompat="@drawable/ic_add_photo" />
 
     <!--RecyclerView: show records -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/my_row"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-16dp"
+        tools:listitem="@layout/my_row" />
 
     <ImageView
         android:id="@+id/empty_imageView"
@@ -35,7 +39,7 @@
         android:layout_marginTop="200dp"
         android:alpha="0.1"
         android:visibility="gone"
-        android:src="@drawable/ic_photo"
+        android:src="@drawable/ic_empty"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
