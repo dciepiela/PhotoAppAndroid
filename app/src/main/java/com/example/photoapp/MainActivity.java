@@ -1,22 +1,20 @@
 package com.example.photoapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -26,24 +24,24 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     //DB helper
-    MyDatabaseHelper myDB;
+    private MyDatabaseHelper myDB;
 
     //action bar
-    ActionBar actionBar;
+    private ActionBar actionBar;
 
     //sort options
-    String orderByNewest = ConstantsDb.COLUMN_ADDED_TIMESTAMP + " DESC";
-    String orderByOldest = ConstantsDb.COLUMN_ADDED_TIMESTAMP + " ASC";
-    String orderByTitleDesc = ConstantsDb.COLUMN_TITLE + " DESC";
-    String orderByTitleAsc = ConstantsDb.COLUMN_TITLE + " ASC";
+    private final String orderByNewest = ConstantsDb.COLUMN_ADDED_TIMESTAMP + " DESC";
+    private final String orderByOldest = ConstantsDb.COLUMN_ADDED_TIMESTAMP + " ASC";
+    private final String orderByTitleDesc = ConstantsDb.COLUMN_TITLE + " DESC";
+    private final String orderByTitleAsc = ConstantsDb.COLUMN_TITLE + " ASC";
 
     //for refreshing records, refresh with last choosen sort option
-    String currentOrderByStatus = orderByNewest;
+    private String currentOrderByStatus = orderByNewest;
 
 
     //empty
-    ImageView empty_imageView;
-    TextView no_data;
+    private ImageView empty_imageView;
+    private TextView no_data;
 
 
     @Override
@@ -60,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
 
         actionBar = getSupportActionBar();
-        actionBar.setTitle("Lista zdjęć");
+
+        if (actionBar != null) {
+            actionBar.setTitle("Lista zdjęć");
+        }
 
         //init db helper
         myDB = new MyDatabaseHelper(this);
@@ -68,14 +69,11 @@ public class MainActivity extends AppCompatActivity {
         //load records (by default newest first)
         loadRecords(orderByNewest);
 
-        addPhoto_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddAndUpdatePhotoActivity.class);
-                intent.putExtra("isEditMode", false); //want to add new date, set false
-                //startActivityForResult(intent, 1);
-                startActivity(intent);
-            }
+        addPhoto_button.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddAndUpdatePhotoActivity.class);
+            intent.putExtra("isEditMode", false); //want to add new date, set false
+            //startActivityForResult(intent, 1);
+            startActivity(intent);
         });
     }
 
@@ -166,19 +164,13 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Usunąć?");
         builder.setMessage("Jesteś pewny, że chcesz usunąć wsszystkie zdjęcia?");
 
-        builder.setNegativeButton("Nie", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setNegativeButton("Nie", (dialog, which) -> {
 
-            }
         });
-        builder.setPositiveButton("Tak", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                myDB.deleteAllRecords();
-                //Refresh activity
-                onResume();
-            }
+        builder.setPositiveButton("Tak", (dialog, which) -> {
+            myDB.deleteAllRecords();
+            //Refresh activity
+            onResume();
         });
 
 
@@ -191,26 +183,23 @@ public class MainActivity extends AppCompatActivity {
         //dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sortuj według:")
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //handle option click
-                        if(which == 0){
-                            //title asc
-                            loadRecords(orderByTitleAsc);
-                        }
-                        else if(which == 1){
-                            //title desc
-                            loadRecords(orderByTitleDesc);
-                        }
-                        else if(which == 2){
-                            //newest
-                            loadRecords(orderByNewest);
-                        }
-                        else if(which == 3){
-                            //oldest
-                            loadRecords(orderByOldest);
-                        }
+                .setItems(options, (dialog, which) -> {
+                    //handle option click
+                    if(which == 0){
+                        //title asc
+                        loadRecords(orderByTitleAsc);
+                    }
+                    else if(which == 1){
+                        //title desc
+                        loadRecords(orderByTitleDesc);
+                    }
+                    else if(which == 2){
+                        //newest
+                        loadRecords(orderByNewest);
+                    }
+                    else if(which == 3){
+                        //oldest
+                        loadRecords(orderByOldest);
                     }
                 })
                 .create().show(); //show dialog

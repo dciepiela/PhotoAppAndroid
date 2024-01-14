@@ -141,7 +141,9 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
 
         //init permission arrays
         cameraPermissions = new String[]{android.Manifest.permission.CAMERA,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        };
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         locationPermissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
@@ -246,7 +248,7 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
 
     private void pickFromCamera() {
         //intent to pick image from camera, the image will be returned in onActivityResult method
-        getLocation();
+        getLocation(); // !!!!!!!!!!!!!
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "Tytuł zdjęcia");
@@ -259,7 +261,6 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
-        //getLocation();
     }
 
     private void pickFromGallery() {
@@ -287,8 +288,10 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
                 Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
         boolean result1 = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        boolean result2 = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == (PackageManager.PERMISSION_GRANTED);
 
-        return result && result1;
+        return result && result1 && result2;
     }
 
     private void requestCameraPermission() {
@@ -297,19 +300,15 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
     }
 
 
-
     //location
-    //onStart()
     private void getLocation() {
         if(checkLocationPermission()) {
             try {
                 locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000L, 5F, (LocationListener) AddAndUpdatePhotoActivity.this);
-
             }catch (Exception e){
                 e.printStackTrace();
             }
-
         }
         else{
             requestLocationPermission();
@@ -324,7 +323,7 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
     }
     private void requestLocationPermission() {
         //ActivityCompat.requestPermissions(this,locationPermissions,LOCATION_REQUEST_CODE);
-        ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(this,locationPermissions,LOCATION_REQUEST_CODE);
     }
 
     //end of location
@@ -378,7 +377,6 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
 
                     if(locationAccepted) {
                         //location permission allowed
-                        //getLastLocation();
                         getLocation();
                     }else{
                         Toast.makeText(this, "Uprawnienie do lokalizacji jest wymagane...",
@@ -410,8 +408,6 @@ public class AddAndUpdatePhotoActivity extends AppCompatActivity implements Loca
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setAspectRatio(1,1)
                         .start(this);
-
-                //getLocation();
             } else if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
                 //croped image received
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
